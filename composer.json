@@ -3,13 +3,13 @@
     "description": "laravel admin",
     "type": "library",
     "keywords": ["laravel", "admin", "grid", "form"],
-    "homepage": "https://github.com/z-song/laravel-admin",
+    "homepage": "https://github.com/virutmath/laravel-admin",
     "license": "MIT",
     "version": "v1.7.16",
     "authors": [
         {
-            "name": "zsong",
-            "email": "zosong@126.com"
+            "name": "virutmath",
+            "email": "virutmath@gmail.com"
         }
     ],
     "require": {
