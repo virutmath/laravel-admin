@@ -116,7 +116,7 @@ trait HasAssets
         }
 
         if (!$css = static::getMinifiedCss()) {
-            $css = array_merge(static::$css, static::baseCss());
+            $css = array_merge(static::baseCss(), static::$css);
         }
 
         $css = array_filter(array_unique($css));
