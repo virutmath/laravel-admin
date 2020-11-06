@@ -566,10 +566,13 @@ SCRIPT;
         }
 
         $reservedColumns = [
-            $this->form->model()->getKeyName(),
             $this->form->model()->getCreatedAtColumn(),
             $this->form->model()->getUpdatedAtColumn(),
         ];
+
+        if ($this->form->model()->incrementing) {
+            $reservedColumns[] = $this->form->model()->getKeyName();
+        }
 
         $this->form->getLayout()->removeReservedFields($reservedColumns);
 
@@ -599,18 +602,11 @@ SCRIPT;
     }
 
     /**
-     * Render form.
-     *
-     * @return string
+     * Add script for tab form.
      */
-    public function render(): string
+    protected function addTabformScript()
     {
-        $this->removeReservedFields();
-
-        $tabObj = $this->form->setTab();
-
-        if (!$tabObj->isEmpty()) {
-            $script = <<<'SCRIPT'
+        $script = <<<'SCRIPT'
 
 var hash = document.location.hash;
 if (hash) {
@@ -633,8 +629,39 @@ if ($('.has-error').length) {
 }
 
 SCRIPT;
-            Admin::script($script);
+        Admin::script($script);
+    }
+
+    protected function addCascadeScript()
+    {
+        $script = <<<SCRIPT
+;(function () {
+    $('form.{$this->formClass}').submit(function (e) {
+        e.preventDefault();
+        $(this).find('div.cascade-group.hide :input').attr('disabled', true);
+    });
+})();
+SCRIPT;
+
+        Admin::script($script);
+    }
+
+    /**
+     * Render form.
+     *
+     * @return string
+     */
+    public function render(): string
+    {
+        $this->removeReservedFields();
+
+        $tabObj = $this->form->setTab();
+
+        if (!$tabObj->isEmpty()) {
+            $this->addTabformScript();
         }
+
+        $this->addCascadeScript();
 
         $data = [
             'form'   => $this,

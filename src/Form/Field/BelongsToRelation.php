@@ -60,8 +60,9 @@ trait BelongsToRelation
     protected function getLoadUrl($multiple = 0)
     {
         $selectable = str_replace('\\', '_', $this->selectable);
+        $args = [$multiple];
 
-        return route('admin.handle-selectable', compact('selectable', 'multiple'));
+        return route('admin.handle-selectable', compact('selectable', 'args'));
     }
 
     /**
@@ -76,7 +77,7 @@ trait BelongsToRelation
         ];
 
         $html = <<<HTML
-<div class="modal fade" id="{$this->modalID}" tabindex="-1" role="dialog">
+<div class="modal fade belongsto" id="{$this->modalID}" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content" style="border-radius: 5px;">
       <div class="modal-header">
@@ -86,7 +87,9 @@ trait BelongsToRelation
         <h4 class="modal-title">{$trans['choose']}</h4>
       </div>
       <div class="modal-body">
+      <div class="loading text-center">
         <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">{$trans['cancal']}</button>
@@ -106,25 +109,30 @@ HTML;
      */
     public function addStyle()
     {
-        $style = <<<STYLE
-#{$this->modalID} tr {
+        $style = <<<'STYLE'
+.belongsto.modal tr {
     cursor: pointer;
 }
-#{$this->modalID} .box {
+.belongsto.modal .box {
     border-top: none;
     margin-bottom: 0;
     box-shadow: none;
 }
 
-.grid-table .empty-grid {
+.belongsto.modal .loading {
+    margin: 50px;
+}
+
+.belongsto.modal .grid-table .empty-grid {
     padding: 20px !important;
 }
 
-.grid-table .empty-grid svg {
+.belongsto.modal .grid-table .empty-grid svg {
     width: 60px !important;
     height: 60px !important;
 }
-.grid-box .box-footer {
+
+.belongsto.modal .grid-box .box-footer {
     border-top: none !important;
 }
 STYLE;
@@ -158,6 +166,8 @@ STYLE;
             'grid'    => $this->makeGrid(),
             'options' => $this->getOptions(),
         ]);
+
+        $this->addCascadeScript();
 
         return parent::fieldRender();
     }
